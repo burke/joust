@@ -24,12 +24,16 @@
 
 ;;; Code:
 
-(unless (boundp '*emacs-config-directory*)
-  (defvar *emacs-config-directory* "~/.emacs.d"))
-(unless (boundp '*joust-directory*)
-  (defvar *joust-directory* (concat *emacs-config-directory* "/joust")))
-(unless (boundp '*joust-packages-directory)
-  (defvar *joust-packages-directory* (concat *joust-directory* "/packages")))
+(defmacro joust:defvar-maybe (var val)
+  `(unless (boundp ',var)
+     (defvar ,var ,val)))
+
+(joust:defvar-maybe *emacs-config-directory*      "~/.emacs.d")
+(joust:defvar-maybe *joust-directory*             (concat *emacs-config-directory* "/joust")
+(joust:defvar-maybe *joust-packages-directory*    (concat *joust-directory* "/packages"))
+(joust:defvar-maybe *joust-meta-directory*        (concat *joust-directory* "/meta"))
+(joust:defvar-maybe *joust-system-meta-directory* (concat *joust-meta-directory* "/system"))
+(joust:defvar-maybe *joust-user-meta-directory*   (concat *joust-meta-directory* "/user"))
 
 (defun joust:package-path (package)
   (concat *joust-packages-directory* "/" package "/" package))
@@ -54,6 +58,28 @@
 
 (defun joust:byte-compile-package (package)
   (byte-recompile-directory (joust:package-path package) 0 t))
+
+;;; PACKAGE DESCRIPTION LOADING ;;;;;;;;;;;;
+(defun joust:package-description:name (name)
+  (setq joust:current-package-name name))
+
+(defun joust:package-description:url (url)
+  (setq joust:current-package-url url))
+
+(defun joust:package-description:type (type)
+  (setq joust:current-package-type type))
+
+(defun joust:package-description:dependencies (&rest deps)
+  (setq joust:current-package-dependencies deps))
+
+(defun joust:load-package-description (package)
+  (let ((name (symbol-function joust:package-description:name))
+        (url (symbol-function joust:package-description:url))
+        (type (symbol-function joust:package-description:type))
+        (dependencies (symbol-function joust:package-description:dependencies)))
+    (load-file (concat *joust-system-meta-directory* "/" package ".el"))))
+;;; END PACKAGE DESCRIPTION LOADING ;;;;;;;;
+
 
 (defun joust:install-package (package)
   "Read package metadata, then fetch, install, compile, and load"
