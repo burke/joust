@@ -90,16 +90,12 @@
   (let* ((package-path (expand-file-name (concat *joust-packages-directory* "/" package))))
     (shell-command (concat "rm -rf \"" package-path "\""))))
 
-(defun joust:check-meta-updates 
+(defun joust:sync ()
   "Check the remote server for meta updates"
-
-  ;; Insert Magic Here.
-
-  )
+  (shell-command (concat "cd \"" *joust-system-meta-directory* "\"; git pull")))
 
 (defun joust:list (type)
   "List packages of a given type"
-
 
   ;; Insert Magic Here.
   
