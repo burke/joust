@@ -67,7 +67,11 @@ module PackageCommands
   def listing
     # output listing with installed
     installed = collect_installed
-
+    printf "%-10s| %-10s| %-5s\n","Package","Installed", "Stale"
+    puts   "=" * 32
+    installed.each_value do |package|
+      printf "%-10s| %-10s| %-5s\n", package['name'],"NOW","Nope"
+    end
   end
 
   # Collected installed packages by ls'ing the package pack for folders. Each
@@ -75,7 +79,8 @@ module PackageCommands
     installed = {}
     # Must find ruby equivalent
     `ls #{PACKAGE_PATH}`.each do |package| # Assumes sanitization of packages directory from junk
-      installed['package'] = YAML.load(File.join(PACKAGE_PATH,package,"#{package}.yml")) #FIXME
+      package.strip! # silly \n
+      installed[package] = YAML.load_file(File.join(PACKAGE_PATH,package,"#{package}.yml")) #FIXME
     end
     installed # return
   end
