@@ -108,6 +108,13 @@
   
   )
 
+(defun joust:list-all
+  "List all packages"
+
+  ;; Insert Magic Here.
+
+  )
+
 (defun joust:list-installed
   "List locally installed packages"
 
