@@ -62,25 +62,15 @@
   (byte-recompile-directory (joust:package-path package) 0 t))
 
 ;;; PACKAGE DESCRIPTION LOADING ;;;;;;;;;;;;
-(defun joust:package-description:name (name)
-  (setq joust:current-package-name name))
-
-(defun joust:package-description:url (url)
-  (setq joust:current-package-url url))
-
-(defun joust:package-description:type (type)
-  (setq joust:current-package-type type))
-
-(defun joust:package-description:dependencies (&rest deps)
-  (setq joust:current-package-dependencies deps))
-
 (defun joust:load-package-description (package)
-  (flet ((name (name) (setq joust:current-package-name name))
-         (url  (url)  (setq joust:current-package-url url))
-         (type (type) (setq joust:current-package-url url))
-         (dependencies (&rest deps) (setq joust:current-package-dependencies deps)))
+  (flet ((name (name) (defvar joust:current-package-name name))
+         (url  (url)  (defvar joust:current-package-url url))
+         (type (type) (defvar joust:current-package-type type))
+         (dependencies (&rest deps) (defvar joust:current-package-dependencies deps)))
     (load-file (concat *joust-system-meta-directory* "/" package ".el"))))
 ;;; END PACKAGE DESCRIPTION LOADING ;;;;;;;;
+
+(joust:load-package-description "gist")
 
 
 (defun joust:install-package (package)
@@ -101,5 +91,3 @@
 (joust:initialize)
 (provide 'joust)
 
-(flet ((name (arg) (insert arg)))
-  (name "asdf"))
