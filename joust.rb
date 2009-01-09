@@ -5,6 +5,7 @@ begin
 rescue LoadError
 end
 require 'yaml'
+require 'optparse'
 
 JOUST_PATH = File.dirname(__FILE__)
 META_PATH  = File.join(JOUST_PATH, "meta")
@@ -66,7 +67,7 @@ module PackageCommands
     end
   end
 
-  def listing(package)
+  def listing(type)
     # output listing with installed
     installed = collect_installed
     printf "%-10s| %-10s| %-5s\n","Package","Installed", "Stale"
@@ -90,11 +91,38 @@ end
 
 class Joust
   extend PackageCommands
+
+  def initialize(args=ARGV)
+    load_opts(args)
+  end
+  def load_opts(args)
+    opts = OptionParser.new do |opts|
+      opts.banner = "Joust help menu:\n"
+      opts.banner += "===============\n"
+      opts.banner += "Usage #$0 [options]"
+
+      opts.on('-l', '--listing [type]',
+              "Get a listing of currently installed packages") do |type|
+        Joust.listing(type)
+      end
+      opts.on('-i', '--install [package]',
+              "Install a given package and its dependencies") do |package|
+        Joust.install(package)
+      end
+      opts.on('-u', '--uninstall [package]',
+              "Install a given package and its dependencies") do |package|
+        Joust.uninstall(package)
+      end
+      opts.on_tail('-h', '--help', 'display this help and exit') do
+        puts opts
+        exit
+      end
+    end
+
+    opts.parse!(args)
+  end
 end
 
 if __FILE__ == $0
-  command = ARGV[0]
-  package = ARGV[1] || nil
-
-  Joust.method(command.to_sym).call(package)
+  j = Joust.new
 end
