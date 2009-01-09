@@ -25,12 +25,12 @@ module PackageCommands
       exit 1
     end
     case meta["type"]
-    when "git": 
-    	# Brute force and bad!
+    when "git":
+      # Brute force and bad!
       `mkdir -p "#{PACKAGE_PATH}/#{meta['name']}"`
       # Todo: Do something sensible if file exists. Git gives a fatal error otherwise.
-    	`git clone "#{meta['url']}" "#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}"`
-  		`cp "#{meta_path}/#{meta['name']}.yml" "#{PACKAGE_PATH}/#{meta['name']}"`
+      `git clone "#{meta['url']}" "#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}"`
+      `cp "#{meta_path}/#{meta['name']}.yml" "#{PACKAGE_PATH}/#{meta['name']}"`
     else
       puts "wtf."
     end
@@ -39,21 +39,21 @@ module PackageCommands
   def uninstall(package)
     puts "removing #{package}"
   end
-  
+
   def listing
-    # output alled 
-		installed = collect_installed
-		
-  endlist ing with inst
-  led
-     d = []]
-  eninstalledrpr{}er ruby equivalen
-    # Must find t
-    `ls #{PACKAGE_PATH}`.each do |pac_file()mes sanitization of packages directory from junk
-    	installed['package'] = YAML.load(File.join(PACKAGE_PATH,package,"#{package}.yml")r #FIXME	
+    # output listing with installed
+    installed = collect_installed
+
+  end
+
+  def collect_installed
+    installed = {}
+    # Must find ruby equivalent
+    `ls #{PACKAGE_PATH}`.each do |package| # Assumes sanitization of packages directory from junk
+      installed['package'] = YAML.load(File.join(PACKAGE_PATH,package,"#{package}.yml")) #FIXME
     end
     installed # return
-  def collect_instal
+  end
 end
 
 class Joust
