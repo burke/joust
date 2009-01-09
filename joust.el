@@ -90,8 +90,16 @@
   (let* ((package-path (expand-file-name (concat *joust-packages-directory* "/" package))))
     (shell-command (concat "rm -rf \"" package-path "\""))))
 
+(defun joust:check-meta-updates 
+  "Check the remote server for meta updates"
+
+  ;; Insert Magic Here.
+
+  )
+
 (defun joust:list (type)
   "List packages of a given type"
+
 
   ;; Insert Magic Here.
   
@@ -106,7 +114,7 @@
 
 (defun joust:list-remote
   "List uninstalled, remote packages"
-
+  
   ;; Insert Magic Here.
 
   )
