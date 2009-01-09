@@ -61,7 +61,6 @@
 (defun joust:byte-compile-package (package)
   (byte-recompile-directory (joust:package-path package) 0 t))
 
-
 (defvar joust:current-package-name nil)
 (defvar joust:current-package-url nil)
 (defvar joust:current-package-type nil)
@@ -85,13 +84,11 @@
   (joust:byte-compile-package package)
   (joust:require-package package))
 
-
+;; TODO: Sanitize input so evil people can't nuke ~
 (defun joust:uninstall (package)
   "Remove package files."
-
-  ;; Insert Magic Here.
-
-  )
+  (let* ((package-path (expand-file-name (concat *joust-packages-directory* "/" package))))
+    (shell-command (concat "rm -rf \"" package-path "\""))))
 
 (defun joust:list (type)
   "List packages of a given type"
