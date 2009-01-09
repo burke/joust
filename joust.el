@@ -94,6 +94,34 @@
 
   )
 
+(defun joust:list (type)
+  "List packages of a given type"
+
+  ;; Insert Magic Here.
+  
+  )
+
+(defun joust:list-installed
+  "List locally installed packages"
+
+  ;; Insert Magic Here.
+
+  )
+
+(defun joust:list-remote
+  "List uninstalled, remote packages"
+
+  ;; Insert Magic Here.
+
+  )
+
+(defun joust:list-out-of-date
+  "List out of date local packages"
+
+  ;; Insert Magic Here.
+
+  )
+
 (joust:initialize)
 (provide 'joust)
 
