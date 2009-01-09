@@ -78,14 +78,12 @@
   (joust:load-package-description package)
 
   (let* ((package joust:current-package-name)
-         (package-path (concat *joust-packages-directory* "/" package "/" package)))
+         (package-path (expand-file-name (concat *joust-packages-directory* "/" package "/" package))))
     (make-directory package-path t)
-    (shell-command (concat "cd \"" package-path "\"; git clone \"" joust:current-package-url)))
+    (shell-command (concat "git clone \"" joust:current-package-url "\" \"" package-path "\"")))
 
   (joust:byte-compile-package package)
   (joust:require-package package))
-
-(joust:install "yasnippet")
 
 (defun joust:uninstall (package)
   "Remove package files."
