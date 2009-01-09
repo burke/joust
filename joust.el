@@ -24,12 +24,14 @@
 
 ;;; Code:
 
+(require 'cl)
+
 (defmacro joust:defvar-maybe (var val)
   `(unless (boundp ',var)
      (defvar ,var ,val)))
 
 (joust:defvar-maybe *emacs-config-directory*      "~/.emacs.d")
-(joust:defvar-maybe *joust-directory*             (concat *emacs-config-directory* "/joust")
+(joust:defvar-maybe *joust-directory*             (concat *emacs-config-directory* "/joust"))
 (joust:defvar-maybe *joust-packages-directory*    (concat *joust-directory* "/packages"))
 (joust:defvar-maybe *joust-meta-directory*        (concat *joust-directory* "/meta"))
 (joust:defvar-maybe *joust-system-meta-directory* (concat *joust-meta-directory* "/system"))
@@ -73,10 +75,10 @@
   (setq joust:current-package-dependencies deps))
 
 (defun joust:load-package-description (package)
-  (let ((name (symbol-function joust:package-description:name))
-        (url (symbol-function joust:package-description:url))
-        (type (symbol-function joust:package-description:type))
-        (dependencies (symbol-function joust:package-description:dependencies)))
+  (flet ((name (name) (setq joust:current-package-name name))
+         (url  (url)  (setq joust:current-package-url url))
+         (type (type) (setq joust:current-package-url url))
+         (dependencies (&rest deps) (setq joust:current-package-dependencies deps)))
     (load-file (concat *joust-system-meta-directory* "/" package ".el"))))
 ;;; END PACKAGE DESCRIPTION LOADING ;;;;;;;;
 
@@ -98,3 +100,6 @@
 
 (joust:initialize)
 (provide 'joust)
+
+(flet ((name (arg) (insert arg)))
+  (name "asdf"))
