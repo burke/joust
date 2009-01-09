@@ -28,13 +28,16 @@ module PackageCommands
     case meta["type"]
     when "git":
       # Brute force and bad!
-      `mkdir -p "#{PACKAGE_PATH}/#{meta['name']}"`
       if File.exists? "#{PACKAGE_PATH}/#{meta['name']}"
         puts "#{meta['name']} is already installed. Perhaps you want to update? "
         exit 1
       end
+      print "Installing #{meta['name']}..."
+      $stdout.flush
+      `mkdir -p "#{PACKAGE_PATH}/#{meta['name']}"`
       `git clone "#{meta['url']}" "#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}"`
       `cp "#{meta_path}/#{meta['name']}.yml" "#{PACKAGE_PATH}/#{meta['name']}"`
+      puts " Done."
     else
       puts "wtf."
     end
@@ -44,7 +47,21 @@ module PackageCommands
   end
 
   def uninstall(package)
-    puts "removing #{package}"
+    if File.exists?(File.join(USER_META_PATH, "#{package}.yml")) or
+      File.exists?(File.join(SYSTEM_META_PATH, "#{package}.yml"))
+
+      if !File.exists?(File.join(PACKAGE_PATH, package))
+        puts "#{package} not installed."
+        exit 1
+      end
+      print "Removing #{package}..."
+      $stdout.flush
+      `rm -rf #{PACKAGE_PATH}/#{package}`
+      puts " Done."
+    else
+      puts "#{package} does not exist."
+      exit 1
+    end
   end
 
   def listing
