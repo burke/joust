@@ -24,6 +24,7 @@ module PackageCommands
       puts "NOT FOUND!"
       exit 1
     end
+
     case meta["type"]
     when "git":
       # Brute force and bad!
@@ -34,6 +35,9 @@ module PackageCommands
     else
       puts "wtf."
     end
+
+    # Append date installed to meta YAML
+    # Write meta yaml to file in package folder
   end
 
   def uninstall(package)
@@ -46,6 +50,7 @@ module PackageCommands
 
   end
 
+  # Collected installed packages by ls'ing the package pack for folders. Each
   def collect_installed
     installed = {}
     # Must find ruby equivalent
