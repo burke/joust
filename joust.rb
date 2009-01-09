@@ -64,7 +64,7 @@ module PackageCommands
     end
   end
 
-  def listing
+  def listing(package)
     # output listing with installed
     installed = collect_installed
     printf "%-10s| %-10s| %-5s\n","Package","Installed", "Stale"
@@ -92,7 +92,7 @@ end
 
 if __FILE__ == $0
   command = ARGV[0]
-  package = ARGV[1]
+  package = ARGV[1] || nil
 
   Joust.method(command.to_sym).call(package)
 end
