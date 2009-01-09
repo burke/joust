@@ -63,10 +63,10 @@
 
 ;;; PACKAGE DESCRIPTION LOADING ;;;;;;;;;;;;
 (defun joust:load-package-description (package)
-  (flet ((name (name) (setq joust:current-package-name name))
-         (url  (url)  (setq joust:current-package-url url))
-         (type (type) (setq joust:current-package-type type))
-         (dependencies (&rest deps) (setq joust:current-package-dependencies deps)))
+  (flet ((name (name) (defvar joust:current-package-name name))
+         (url  (url)  (defvar joust:current-package-url url))
+         (type (type) (defvar joust:current-package-type type))
+         (dependencies (&rest deps) (defvar joust:current-package-dependencies deps)))
     (load-file (concat *joust-system-meta-directory* "/" package ".el"))))
 ;;; END PACKAGE DESCRIPTION LOADING ;;;;;;;;
 
