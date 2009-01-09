@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(require 'cl)
+(require 'cl) ;; yeah, deal with it.
 
 (defmacro joust:defvar-maybe (var val)
   `(unless (boundp ',var)
@@ -61,27 +61,33 @@
 (defun joust:byte-compile-package (package)
   (byte-recompile-directory (joust:package-path package) 0 t))
 
-;;; PACKAGE DESCRIPTION LOADING ;;;;;;;;;;;;
+
+(defvar joust:current-package-name nil)
+(defvar joust:current-package-url nil)
+(defvar joust:current-package-type nil)
+(defvar joust:current-package-dependencies nil)
 (defun joust:load-package-description (package)
-  (flet ((name (name) (defvar joust:current-package-name name))
-         (url  (url)  (defvar joust:current-package-url url))
-         (type (type) (defvar joust:current-package-type type))
-         (dependencies (&rest deps) (defvar joust:current-package-dependencies deps)))
+  (flet ((name (name) (setq joust:current-package-name name))
+         (url  (url)  (setq joust:current-package-url url))
+         (type (type) (setq joust:current-package-type type))
+         (dependencies (&rest deps) (setq joust:current-package-dependencies deps)))
     (load-file (concat *joust-system-meta-directory* "/" package ".el"))))
-;;; END PACKAGE DESCRIPTION LOADING ;;;;;;;;
 
-(joust:load-package-description "gist")
-
-
-(defun joust:install-package (package)
+(defun joust:install (package)
   "Read package metadata, then fetch, install, compile, and load"
+  (joust:load-package-description package)
 
-  ;; Insert Magic Here.
+  (let* ((package joust:current-package-name)
+         (package-path (concat *joust-packages-directory* "/" package "/" package)))
+    (make-directory package-path t)
+    (shell-command (concat "cd \"" package-path "\"; git clone \"" joust:current-package-url)))
 
   (joust:byte-compile-package package)
   (joust:require-package package))
 
-(defun joust:uninstall-package (package)
+(joust:install "yasnippet")
+
+(defun joust:uninstall (package)
   "Remove package files."
 
   ;; Insert Magic Here.
