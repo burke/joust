@@ -44,11 +44,6 @@
   "Add the specified package to the load path"
   (add-to-list 'load-path (joust:package-path package)))
 
-(defun joust:list-packages ()
-  "Return a list of all installed packages"
-  (let ((packages (directory-files *joust-packages-directory*)))
-    (remove "." (remove ".." packages))))
-
 (defun joust:require-package (package)
   "Given a package name, load it from the packages directory"
   (joust:add-path package)
@@ -94,35 +89,20 @@
   "Check the remote server for meta updates"
   (shell-command (concat "cd \"" *joust-system-meta-directory* "\"; git pull")))
 
-(defun joust:list (type)
-  "List packages of a given type"
+(defun joust:list-installed ()
+  "Return a list of all installed packages"
+  (let ((packages (directory-files *joust-packages-directory*)))
+    (remove "." (remove ".." packages))))
 
-  ;; Insert Magic Here.
-  
-  )
-
-(defun joust:list-all
-  "List all packages"
-
-  ;; Insert Magic Here.
-
-  )
-
-(defun joust:list-installed
-  "List locally installed packages"
-
-  ;; Insert Magic Here.
-
-  )
-
-(defun joust:list-remote
+(defun joust:list-all ()
   "List uninstalled, remote packages"
-  
-  ;; Insert Magic Here.
+  (let ((packages (directory-files *joust-system-meta-directory*)))
+    (mapcar '(lambda (el) el) ;; Remove trailing .el
+            (remove "." (remove ".." packages))))
 
-  )
+(joust:list-all)
 
-(defun joust:list-out-of-date
+(defun joust:list-out-of-date ()
   "List out of date local packages"
 
   ;; Insert Magic Here.
