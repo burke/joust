@@ -94,8 +94,16 @@
 
   )
 
+(defun joust:check-meta-updates 
+  "Check the remote server for meta updates"
+
+  ;; Insert Magic Here.
+
+  )
+
 (defun joust:list (type)
   "List packages of a given type"
+
 
   ;; Insert Magic Here.
   
@@ -110,7 +118,7 @@
 
 (defun joust:list-remote
   "List uninstalled, remote packages"
-
+  
   ;; Insert Magic Here.
 
   )
