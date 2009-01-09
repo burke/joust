@@ -28,7 +28,10 @@ module PackageCommands
     when "git":
       # Brute force and bad!
       `mkdir -p "#{PACKAGE_PATH}/#{meta['name']}"`
-      # Todo: Do something sensible if file exists. Git gives a fatal error otherwise.
+      if File.exists? "#{PACKAGE_PATH}/#{meta['name']}"
+        puts "#{meta['name']} is already installed. Perhaps you want to update? "
+        exit 1
+      end
       `git clone "#{meta['url']}" "#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}"`
       `cp "#{meta_path}/#{meta['name']}.yml" "#{PACKAGE_PATH}/#{meta['name']}"`
     else
