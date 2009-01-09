@@ -78,12 +78,13 @@
   (joust:load-package-description package)
 
   (let* ((package joust:current-package-name)
-         (package-path (expand-file-name (concat *joust-packages-directory* "/" package "/" package))))
+         (package-path (expand-file-name (concat *joust-packages-directory* "/" package))))
     (make-directory package-path t)
-    (shell-command (concat "git clone \"" joust:current-package-url "\" \"" package-path "\"")))
+    (shell-command (concat "git clone \"" joust:current-package-url "\" \"" package-path "/" package "\"")))
 
   (joust:byte-compile-package package)
   (joust:require-package package))
+
 
 (defun joust:uninstall (package)
   "Remove package files."
