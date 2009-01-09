@@ -1,20 +1,22 @@
-(defvar *emacs-config-path* "~/.config.d/emacs")
-(defvar *joust-path* (concat *emacs-config-path* "/joust"))
-(defvar *joust-packages-path* (concat *joust-path* "/packages"))
+(unless (boundp '*emacs-config-path*)
+  (defvar *emacs-config-path* "~/.config.d/emacs"))
+(unless (boundp '*joust-path*)
+  (defvar *joust-path* (concat *emacs-config-path* "/joust")))
+(unless (boundp '*joust-packages-path)
+  (defvar *joust-packages-path* (concat *joust-path* "/packages")))
 
-(defun add-path (path)
+(defun joust:add-path (path)
   (add-to-list 'load-path (concat *joust-packages-path* "/" path "/" path)))
 
-(defun list-packages ()
+(defun joust:list-packages ()
   (let ((packages (directory-files *joust-packages-path*)))
     (remove "." (remove ".." packages))))
 
-(defun require-packages (packages)
+(defun joust:require-packages (packages)
   (if (not (eq nil packages))
     (let ((package (car packages)))
-      (add-path package)
+      (joust:add-path package)
       (require (intern package))
-      (require-packages (cdr packages)))))
+      (joust:require-packages (cdr packages)))))
 
-(require-packages (list-packages))
-
+(joust:require-packages (joust:list-packages))
