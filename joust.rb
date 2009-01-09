@@ -69,33 +69,46 @@ class Joust
       exit 1
     end
 
+    meta['dependencies'].each do |d|
+      install(d)
+      # If d is not found we are in trouble
+    end unless meta['dependencies'].nil?
+
     case meta["type"]
     when "git":
-      if @force
-        `rm -rf #{PACKAGE_PATH}/#{meta['name']}`
-      end
-      # Brute force and bad!
-      if File.exists? "#{PACKAGE_PATH}/#{meta['name']}"
-        puts "#{meta['name']} is already installed. Perhaps you want to update? "
-        exit 1
-      end
-      print "Installing #{meta['name']}..."
-      $stdout.flush
-      `mkdir -p "#{PACKAGE_PATH}/#{meta['name']}"`
-      `git clone "#{meta['url']}" "#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}"`
-
-      meta['installed'] = Time.now
-      File.open("#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}.yml","w") do |f|
-        f.puts meta.to_yaml
-      end
-
-      puts " Done."
+        git_install(meta)
     else
       puts "wtf."
     end
 
     # Append date installed to meta YAML
     # Write meta yaml to file in package folder
+  end
+
+  def git_install(meta)
+    if @force
+      `rm -rf #{PACKAGE_PATH}/#{meta['name']}`
+    end
+    # Brute force and bad!
+    if File.exists? "#{PACKAGE_PATH}/#{meta['name']}"
+      puts "#{meta['name']} is already installed. Perhaps you want to update? "
+      exit 1
+    end
+    print "Installing #{meta['name']}..."
+    $stdout.flush
+    `mkdir -p "#{PACKAGE_PATH}/#{meta['name']}"`
+    `git clone "#{meta['url']}" "#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}"`
+
+    meta['installed'] = Time.now
+    File.open("#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}.yml","w") do |f|
+      f.puts meta.to_yaml
+    end
+
+    puts " Done."
+  end
+  # Not the safest, but provides rudimentary coverage
+  def package_installed?(name)
+    File.exists?(File.join(PACKAGE_PATH,name,"#{name.yml}"))
   end
 
   def uninstall(package)
