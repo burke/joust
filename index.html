@@ -5,11 +5,55 @@
     <meta content='Chromium 53' name='author' />
     <link href='http://yui.yahooapis.com/2.6.0/build/reset-fonts-grids/reset-fonts-grids.css' rel='stylesheet' type='text/css' />
     <link href='screen.css' media='screen' rel='stylesheet' type='text/css' />
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="jquery.corner.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('.question').corner("cc:#000");
+      });
+    </script>
     <title>Joust</title>
   </head>
   <body>
     <div id='content'>
-      <img src="temp.png" alt="yeah, I'll fix it later." />
+      <div id='header'>
+        <h1 id='logo'><span></span>Joust</h1>
+      </div>
+      <div id='main'>
+        <div class='question'>
+          <dl id="emacs">
+            <dt>What is Joust?</dt>
+            <dd>Joust is a package manager for emacs. Unlike every other emacs package manager, it doesn't suck.</dd>
+          </dl>
+        </div>
+        <div class='question'>
+          <dl id="pacman">
+            <dt>Why "Joust"?</dt>
+            <dd>"Pacman" was taken.</dd>
+          </dl>
+        </div>
+        <div class='question'>
+          <dl id="cr53">
+            <dt>Who are you?</dt>
+            <dd>Joust was written by Burke Libbey and Ryan Neufeld at <a href="http://53cr.com">Chromium 53</a>.</dd>
+          </dl>
+        </div>
+        <div class='question'>
+          <dl id="github">
+            <dt>Why is Joust awesome?</dt>
+            <dd>Joust makes it easy to manage and submit packages, and if you don't like hat's going on, you can make your own repository.</dd>
+          </dl>
+        </div>
+        <div class='question'>
+          <dl id="download">
+            <dt>Sign me up already?</dt>
+            <dd>You can download joust at <a href="http://github.com/burke/joust">http://github.com/burke/joust</a>.</dd>
+          </dl>
+        </div>
+      </div>
+      <div id="footer">
+        &copy;2009 Chromium 53
+      </div>
     </div>
   </body>
 </html>
