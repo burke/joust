@@ -31,9 +31,12 @@
 (unless (boundp '*joust-packages-directory)
   (defvar *joust-packages-directory* (concat *joust-directory* "/packages")))
 
-(defun joust:add-path (path)
+(defun joust:package-path (package)
+  (concat *joust-packages-directory* "/" package "/" package))
+
+(defun joust:add-path (package)
   "Add the specified package to the load path"
-  (add-to-list 'load-path (concat *joust-packages-directory* "/" path "/" path)))
+  (add-to-list 'load-path (joust:package-path package)))
 
 (defun joust:list-packages ()
   "Return a list of all installed packages"
@@ -49,6 +52,23 @@
   "Load all packages"
   (mapcar 'joust:require-package (joust:list-packages)))
 
+(defun joust:byte-compile-package (package)
+  (byte-recompile-directory (joust:package-path package) 0 t))
+
+(defun joust:install-package (package)
+  "Read package metadata, then fetch, install, compile, and load"
+
+  ;; Insert Magic Here.
+
+  (joust:byte-compile-package package)
+  (joust:require-package package))
+
+(defun joust:uninstall-package (package)
+  "Remove package files."
+
+  ;; Insert Magic Here.
+
+  )
+
 (joust:initialize)
 (provide 'joust)
-
