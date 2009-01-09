@@ -69,10 +69,10 @@ module PackageCommands
 
   def listing(type)
     # output listing with installed
-    installed = collect_installed
+    list = collect(type)
     printf "%-10s| %-10s| %-5s\n","Package","Installed", "Stale"
     puts   "=" * 32
-    installed.each_value do |package|
+    list.each_value do |package|
       printf "%-10s| %-10s| %-5s\n", package['name'],"NOW","Nope"
     end
   end
@@ -86,6 +86,36 @@ module PackageCommands
       installed[package] = YAML.load_file(File.join(PACKAGE_PATH,package,"#{package}.yml")) #FIXME
     end
     installed # return
+  end
+
+  def collect(type)
+    if type == :all
+      collect(:system).merge(collect(:user))
+    else
+      list = {}
+      if type == :installed
+        ls_path = File.join(PACKAGE_PATH)
+        path_to_yaml = Proc.new do |package_name|
+          File.join(ls_path,package_name,"#{package_name}.yml")
+        end
+      elsif type == :system
+        ls_path = File.join(META_PATH,"system")
+        path_to_yaml = Proc.new do |package_name|
+          File.join(ls_path,"#{package_name}.yml")
+        end
+      elsif type == :user
+        ls_path = File.join(META_PATH,"user")
+        path_to_yaml = Proc.new do |package_name|
+          File.join(ls_path,"#{package_name}.yml")
+        end
+      end
+
+      `ls #{ls_path}`.each do |package| # Assumes sanitization of packages directory
+        package.strip!.gsub!(".yml","") # silly \n
+        list[package] = YAML.load_file(path_to_yaml[package]) #FIXME
+      end
+      list
+    end
   end
 end
 
@@ -102,18 +132,21 @@ class Joust
       opts.banner += "Usage #$0 [options]"
 
       opts.on('-l', '--listing [type]',
-              "Get a listing of currently installed packages") do |type|
-        Joust.listing(type)
+              "Get a listing of packages",
+              "  Types: all, installed, outdated") do |type|
+        Joust.listing(type.to_sym)
       end
+
       opts.on('-i', '--install [package]',
               "Install a given package and its dependencies") do |package|
         Joust.install(package)
       end
-      opts.on('-u', '--uninstall [package]',
-              "Install a given package and its dependencies") do |package|
+
+      opts.on('-r', '--uninstall [package]',
+              "Uninstall a given package") do |package|
         Joust.uninstall(package)
       end
-      opts.on_tail('-h', '--help', 'display this help and exit') do
+      opts.on_tail('-h', '--help', 'Display this help and exit') do
         puts opts
         exit
       end
