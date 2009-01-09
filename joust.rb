@@ -83,10 +83,9 @@ class Joust
       `mkdir -p "#{PACKAGE_PATH}/#{meta['name']}"`
       `git clone "#{meta['url']}" "#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}"`
 
-      meta.merge!({'version' => Time.now})
-      File.open("#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}.yml","w") { |f| f.puts meta }
+      meta['version'] = Time.now
+      File.open("#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}.yml","w") { |f| f.puts meta.to_yaml }
 
-      `cp "#{meta_path}/#{meta['name']}.yml" "#{PACKAGE_PATH}/#{meta['name']}"`
       puts " Done."
     else
       puts "wtf."
