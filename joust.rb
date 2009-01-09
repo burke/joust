@@ -6,6 +6,7 @@ rescue LoadError
 end
 require 'yaml'
 require 'optparse'
+require 'time'
 
 JOUST_PATH = File.dirname(__FILE__)
 META_PATH  = File.join(JOUST_PATH, "meta")
@@ -83,10 +84,11 @@ class Joust
       `mkdir -p "#{PACKAGE_PATH}/#{meta['name']}"`
       `git clone "#{meta['url']}" "#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}"`
 
-      meta.merge!({'version' => Time.now})
-      File.open("#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}.yml","w") { |f| f.puts meta }
+      meta['installed'] = Time.now
+      File.open("#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}.yml","w") do |f|
+        f.puts meta.to_yaml
+      end
 
-      `cp "#{meta_path}/#{meta['name']}.yml" "#{PACKAGE_PATH}/#{meta['name']}"`
       puts " Done."
     else
       puts "wtf."
@@ -117,22 +119,27 @@ class Joust
   def listing(type)
     # output listing with installed
     list = collect(type)
-    printf "%-10s| %-10s| %-5s\n","Package","Installed", "Stale"
-    puts   "=" * 32
+    package_width = list.values.inject(10) do |max,curr|
+      width = curr['name'].length
+      if width > max
+        width
+      else
+        max
+      end
+    end
+    printf "%-#{package_width}s | %-12s | %-5s\n","Package","Installed", "Stale"
+    puts   "=" * (package_width + 3 + 12 + 3 + 5)
     list.each_value do |package|
-      printf "%-10s| %-10s| %-5s\n", package['name'],"NOW","Nope"
-    end
-  end
+      installed = ""
+      if package['installed']
+          installed = package['installed'].strftime("%b %d %H:%M")
+      end
 
-  # Collected installed packages by ls'ing the package pack for folders. Each
-  def collect_installed
-    installed = {}
-    # Must find ruby equivalent
-    `ls #{PACKAGE_PATH}`.each do |package| # Assumes sanitization of packages directory from junk
-      package.strip! # silly \n
-      installed[package] = YAML.load_file(File.join(PACKAGE_PATH,package,"#{package}.yml")) #FIXME
+      printf "%-#{package_width}s | %-12s | %-5s\n",
+        package['name'],
+        installed,
+        "Nope"
     end
-    installed # return
   end
 
   def collect(type)
