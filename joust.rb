@@ -13,7 +13,47 @@ SYSTEM_META_PATH = File.join(META_PATH, "system")
 USER_META_PATH = File.join(META_PATH, "user")
 PACKAGE_PATH = File.join(JOUST_PATH, "packages")
 
-module PackageCommands
+class Joust
+
+  def initialize(args=ARGV)
+    load_opts(args)
+  end
+
+  def load_opts(args)
+    opts = OptionParser.new do |opts|
+      opts.banner = "Joust help menu:\n"
+      opts.banner += "===============\n"
+      opts.banner += "Usage #$0 [options]"
+
+      opts.on('-l', '--listing [type]',
+              "Get a listing of packages",
+              "  Types: all, installed, outdated") do |type|
+        listing(type.to_sym)
+      end
+
+      opts.on('-i', '--install [package]',
+              "Install a given package and its dependencies") do |package|
+        install(package)
+      end
+
+      opts.on('-r', '--uninstall [package]',
+              "Uninstall a given package") do |package|
+        uninstall(package)
+      end
+
+      opts.on("-f", "--[no-]force", "Force activities (will overwrite on install)") do |f|
+        @force = f
+      end
+
+      opts.on_tail('-h', '--help', 'Display this help and exit') do
+        puts opts
+        exit
+      end
+    end
+
+    opts.parse!(args)
+  end
+
   def install(package)
     user_meta = File.join(USER_META_PATH, "#{package}.yml")
     system_meta = File.join(SYSTEM_META_PATH, "#{package}.yml")
@@ -30,6 +70,9 @@ module PackageCommands
 
     case meta["type"]
     when "git":
+      if @force
+        `rm -rf #{PACKAGE_PATH}/#{meta['name']}`
+      end
       # Brute force and bad!
       if File.exists? "#{PACKAGE_PATH}/#{meta['name']}"
         puts "#{meta['name']} is already installed. Perhaps you want to update? "
@@ -39,6 +82,10 @@ module PackageCommands
       $stdout.flush
       `mkdir -p "#{PACKAGE_PATH}/#{meta['name']}"`
       `git clone "#{meta['url']}" "#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}"`
+
+      meta.merge!({'version' => Time.now})
+      File.open("#{PACKAGE_PATH}/#{meta['name']}/#{meta['name']}.yml","w") { |f| f.puts meta }
+
       `cp "#{meta_path}/#{meta['name']}.yml" "#{PACKAGE_PATH}/#{meta['name']}"`
       puts " Done."
     else
@@ -116,43 +163,6 @@ module PackageCommands
       end
       list
     end
-  end
-end
-
-class Joust
-  extend PackageCommands
-
-  def initialize(args=ARGV)
-    load_opts(args)
-  end
-  def load_opts(args)
-    opts = OptionParser.new do |opts|
-      opts.banner = "Joust help menu:\n"
-      opts.banner += "===============\n"
-      opts.banner += "Usage #$0 [options]"
-
-      opts.on('-l', '--listing [type]',
-              "Get a listing of packages",
-              "  Types: all, installed, outdated") do |type|
-        Joust.listing(type.to_sym)
-      end
-
-      opts.on('-i', '--install [package]',
-              "Install a given package and its dependencies") do |package|
-        Joust.install(package)
-      end
-
-      opts.on('-r', '--uninstall [package]',
-              "Uninstall a given package") do |package|
-        Joust.uninstall(package)
-      end
-      opts.on_tail('-h', '--help', 'Display this help and exit') do
-        puts opts
-        exit
-      end
-    end
-
-    opts.parse!(args)
   end
 end
 
