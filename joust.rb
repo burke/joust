@@ -162,24 +162,20 @@ class Joust
       list = {}
       if type == :installed
         ls_path = File.join(PACKAGE_PATH)
-        path_to_yaml = Proc.new do |package_name|
-          File.join(ls_path,package_name,"#{package_name}.yml")
-        end
+        combined_path = File.join(ls_path,package_name)
       elsif type == :system
         ls_path = File.join(META_PATH,"system")
-        path_to_yaml = Proc.new do |package_name|
-          File.join(ls_path,"#{package_name}.yml")
-        end
+        combined_path = ls_path
       elsif type == :user
         ls_path = File.join(META_PATH,"user")
-        path_to_yaml = Proc.new do |package_name|
-          File.join(ls_path,"#{package_name}.yml")
-        end
+        combined_path = ls_path
       end
-
-      `ls #{ls_path}`.each do |package| # Assumes sanitization of packages directory
+      path_to_yaml = Proc.new do |package_name|
+        File.join(ls_path,"#{package_name}.yml")
+      end
+      `ls #{ls_path}`.reject{|file| file.scan(/\.el$/) }.each do |package| # Assumes sanitization of packages directory
         package.strip!.gsub!(".yml","") # silly \n
-        list[package] = YAML.load_file(path_to_yaml[package]) #FIXME
+        list[package] = YAML.load_file(path_to_yaml[package]) # FIXME
       end
       list
     end
